@@ -5,6 +5,18 @@
   text-align: center;
 }
 
+.parent {
+  display: flex;
+}
+
+.selBox {
+  margin-left: 60px;
+}
+
+.trayBox {
+  margin-top: 60px;
+}
+
 .empty, .unusable {
   border: none;
   margin: 1px;

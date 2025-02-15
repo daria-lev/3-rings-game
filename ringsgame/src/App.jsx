@@ -3,13 +3,13 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Tile from './Tile'
-import Board from './Board'
 import Tray from './Tray'
 
 function App() {
   const [count, setCount] = useState(0)
   const [board, setBoard] = useState(defaultBoard())
   const [curSelected, setSelected] = useState([null,null,null]) // biggest to smallest
+  const [selectedID, setSelID] = useState(null)
 
   function defaultBoard() {
     let b = []
@@ -30,34 +30,56 @@ function App() {
     return b
   }
 
-  function onTrayClick(ring) {
+  function onTrayClick(ring, id) {
     setSelected(ring)
+    //setSelID(id)
   }
 
   function onBoardClick(i, j) {
-    setSelected([null,null,null])
-    let newBoard = [...board]
-    newBoard[i][j] = curSelected
-    setBoard(newBoard)
+    if (curSelected[0] !== null && curSelected[1] !== null && curSelected[2] !== null) {
+      let newBoard = [...board]
+      newBoard[i][j] = curSelected
+      setSelected([null,null,null])
+      setBoard(newBoard)
+    }
   }
 
   function getPoints(points) {
     setCount(count + points)
   }
 
+  function createBoard() {
+    let output = []
+    for (let i = 0; i < board.length; i++) {
+      let row = []
+      for (let j = 0; j < board[0].length; j++) {
+        if (board[i][j] === null) {
+          row.push(<button className='unusable'></button>)
+        } else {
+          row.push(<Tile type={'board'} ring={board[i][j]} clicked={onBoardClick} id={[i,j]}></Tile>)
+        }
+      }
+      output.push(<div>{row}</div>)
+    }
+    return output
+  }
 
   return (
     <>
-      <div>
-        <Board click={onBoardClick} board={board}></Board>
+    <div className='parent'>
+      <div className='boardBox'>
+        {createBoard()}
       </div>
-      <div>
-        <p>Currently Selected off to the side</p>
+      <div className='selBox'>
+        <p>Currently Selected</p>
         <Tile ring={curSelected}></Tile>
       </div>
-      <div>
+      
+    </div>
+    <div className='trayBox'>
         <Tray click={onTrayClick}></Tray>
       </div>
+      
     </>
   )
 }

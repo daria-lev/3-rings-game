@@ -8,7 +8,7 @@ function Tray(props) {
   
 
   function tileClicked(ring, id) {
-    props.click(ring)
+    props.click(ring, id)
     setID(id)
   }
   
