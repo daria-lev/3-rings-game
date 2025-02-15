@@ -1,0 +1,23 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.empty, .unusable {
+  border: none;
+  margin: 1px;
+  border-radius: 0;
+  color: white;
+  padding: 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  /* background-color: lightgray; */
+}
+
+.unusable {
+  background-color: darkgray;
+}
