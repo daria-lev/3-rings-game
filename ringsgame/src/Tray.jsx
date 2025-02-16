@@ -1,10 +1,24 @@
 import { useState } from 'react'
 import Tile from './Tile'
+import { useEffect } from 'react'
 
 function Tray(props) {
   const colors = ["red", "blue", "green", "yellow", "purple"]
   const [rings, setRings] = useState([createRing(), createRing(), createRing()])
   const [selectedID, setID] = useState(null)
+  
+
+  //use effect, pass in selected, if it's all null AND selectedID isn't null then createRing at selectedID
+  useEffect(() => {
+    console.log(props.clear)
+    if (!props.clear && props.selected[0] == null && props.selected[1] == null && props.selected[2] == null 
+        && selectedID != null) {
+      let newRings = [...rings]
+      newRings[selectedID] = createRing();
+      setRings(newRings)
+      setID(null)
+    }
+  }, [props.clear, props.selected, selectedID]);
   
 
   function tileClicked(ring, id) {

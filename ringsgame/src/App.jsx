@@ -10,6 +10,7 @@ function App() {
   const [board, setBoard] = useState(defaultBoard())
   const [curSelected, setSelected] = useState([null,null,null]) // biggest to smallest
   const [selectedID, setSelID] = useState(null)
+  const [clear, setClear] = useState(false)
 
   function defaultBoard() {
     let b = []
@@ -32,15 +33,20 @@ function App() {
 
   function onTrayClick(ring, id) {
     setSelected(ring)
+    setClear(false)
     //setSelID(id)
   }
 
   function onBoardClick(i, j) {
-    if (curSelected[0] !== null && curSelected[1] !== null && curSelected[2] !== null) {
+    //console.log(curSelected)
+    setClear(false)
+    if (curSelected[0] !== null || curSelected[1] !== null || curSelected[2] !== null) {
+      setSelected([null,null,null])
       let newBoard = [...board]
       newBoard[i][j] = curSelected
-      setSelected([null,null,null])
+      console.log("set board")
       setBoard(newBoard)
+      // check for points
     }
   }
 
@@ -59,9 +65,16 @@ function App() {
           row.push(<Tile type={'board'} ring={board[i][j]} clicked={onBoardClick} id={[i,j]}></Tile>)
         }
       }
-      output.push(<div>{row}</div>)
+      output.push(<div key={i}>{row}</div>)
     }
     return output
+  }
+
+  function onClearClick() {
+    setClear(true)
+    setBoard(defaultBoard())
+    setSelected([null, null, null])
+    //clearing = false
   }
 
   return (
@@ -77,8 +90,9 @@ function App() {
       
     </div>
     <div className='trayBox'>
-        <Tray click={onTrayClick}></Tray>
-      </div>
+      <Tray click={onTrayClick} selected={curSelected} clear={clear}></Tray>
+    </div>
+    <button onClick={onClearClick}>Clear Board</button>
       
     </>
   )
