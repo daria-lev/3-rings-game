@@ -10,7 +10,7 @@ function Tray(props) {
 
   //use effect, pass in selected, if it's all null AND selectedID isn't null then createRing at selectedID
   useEffect(() => {
-    console.log(props.clear)
+    // console.log(props.clear)
     if (!props.clear && props.selected[0] == null && props.selected[1] == null && props.selected[2] == null 
         && selectedID != null) {
       let newRings = [...rings]
