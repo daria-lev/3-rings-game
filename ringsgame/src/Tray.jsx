@@ -27,13 +27,20 @@ function Tray(props) {
   }
   
   function createRing() {
-    // const vals = [randint(0,2), randint(0,2), randint(0,2)]
-    // let ring = [null, null, null]
-    // for (let i = 0; i < 3; i++) {
-    //   ring[vals[i]] = colors[randint(0, colors.length-1)]
-    // }
+    const vals = [randint(0,2), randint(0,2), randint(0,2)]
+    let ring = [null, null, null]
+    for (let i = 0; i < 3; i++) {
+      ring[vals[i]] = colors[randint(0, colors.length-1)]
+    }
     //temp
-    let ring = [colors[randint(0, colors.length-1)], null, null]
+    // let ring = []
+    // for (let i = 0; i < 3; i++) {
+    //   if (randint(0,2) == 1) {
+    //     ring.push(colors[randint(0, colors.length-1)])
+    //   } else {
+    //     ring.push(null)
+    //   }
+    // }
     return ring
     // let newRings = [...rings]
     // newRings[selectedID] = ring

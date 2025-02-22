@@ -46,56 +46,106 @@ function App() {
       let newBoard = [...board]
       newBoard[i][j] = curSelected
       // console.log("set board")
-      let toClear = []
+      let toClear = [] //check per non null color, set of colors checked? also check each ring individually
       let color = curSelected[0]
-      for (let d = 0; d < directions.length; d++) {
-        let dir = directions[d]
-        // console.log("dir " + dir[0], dir[1])
-        if (matchTile(i+dir[0], j+dir[1], color)) {
-          console.log("pos dir")
-          if (matchTile(i-dir[0], j-dir[1], color)) {
-            console.log("neg dir")
-            toClear.push([i+dir[0], j+dir[1]])
-            toClear.push([i-dir[0], j-dir[1]])
-            if (matchTile(i-2*dir[0], j-2*dir[1], color)) {
-              console.log("neg 2 dir")
-              toClear.push([i-2*dir[0], j-2*dir[1]])
+      let seenColors = []
+      for (let ringNum = 0; ringNum < 3; ringNum++) {
+        if (curSelected[ringNum] == null || seenColors.includes(curSelected[ringNum])) {continue}
+        seenColors.push(curSelected[ringNum])
+        let ringClears = processOneRing(i, j, curSelected[ringNum])
+        for (let temp = 0; temp < ringClears.length; temp++) {
+          toClear.push(ringClears[temp])
+        }
+        if (ringClears.length > 0) {
+          for (let temp = 0; temp < 3; temp++) {
+            if (curSelected[temp] === curSelected[ringNum]) {
+              toClear.push([i,j,temp])
             }
-          } 
-          if (matchTile(i+2*dir[0], j+2*dir[1], color)) {
-            console.log("pos 2 dir")
-            toClear.push([i+dir[0], j+dir[1]])
-            toClear.push([i+2*dir[0], j+2*dir[1]])
           }
-        } else if (matchTile(i-dir[0], j-dir[1], color) && matchTile(i-2*dir[0], j-2*dir[1], color)) {
-          console.log("only neg dir")
-          toClear.push([i-2*dir[0], j-2*dir[1]])
-          toClear.push([i-dir[0], j-dir[1]])
         }
       }
+      
       let pts = 0
       for (let t = 0; t < toClear.length; t++) {
         let tile = toClear[t]
-        newBoard[tile[0]][tile[1]] = [null,null,null]
+        let newTile = [...board[tile[0]][tile[1]]]
+        newTile[tile[2]] = null
+        newBoard[tile[0]][tile[1]] = newTile
         pts++
       }
-      if (toClear.length > 0) {
-        newBoard[i][j] = [null,null,null]
-        pts++
-      }
+      // if (toClear.length > 0) {
+      //   newBoard[i][j] = [null,null,null]
+      //   pts++
+      // }
       setBoard(newBoard)
       setCount(pts+count)
       // check for points
     }
   }
 
+
+  function processOneRing(i, j, color) {
+    let toClear = []
+    for (let d = 0; d < directions.length; d++) {
+      let dir = directions[d]
+      // console.log("dir " + dir[0], dir[1])
+      let forwardOne = matchTile(i+dir[0], j+dir[1], color)
+      if (forwardOne.length !== 0) {
+        console.log("pos dir")
+        let backOne = matchTile(i-dir[0], j-dir[1], color)
+        if (backOne.length !== 0) {
+          console.log("neg dir")
+          for (let temp = 0; temp < forwardOne.length; temp++) {
+            toClear.push([i+dir[0], j+dir[1], forwardOne[temp]])
+          }
+          for (let temp = 0; temp < backOne.length; temp++) {
+            toClear.push([i-dir[0], j-dir[1], backOne[temp]])
+          }
+          let backTwo = matchTile(i-2*dir[0], j-2*dir[1], color)
+          for (let temp = 0; temp < backTwo.length; temp++) {
+            toClear.push([i-2*dir[0], j-2*dir[1], backTwo[temp]])
+          }
+          let forTwo = matchTile(i+2*dir[0], j+2*dir[1], color)
+          for (let temp = 0; temp < forTwo.length; temp++) {
+            toClear.push([i+2*dir[0], j+2*dir[1], forTwo[temp]])
+          }
+        } 
+        else if (matchTile(i+2*dir[0], j+2*dir[1], color).length !== 0) {
+          console.log("pos 2 dir")
+          let forwardOne = matchTile(i+dir[0], j+dir[1], color)
+          for (let temp = 0; temp < forwardOne.length; temp++) {
+            toClear.push([i+dir[0], j+dir[1], forwardOne[temp]])
+          }
+          let forTwo = matchTile(i+2*dir[0], j+2*dir[1], color)
+          for (let temp = 0; temp < forTwo.length; temp++) {
+            toClear.push([i+2*dir[0], j+2*dir[1], forTwo[temp]])
+          }
+        }
+      } else if (matchTile(i-dir[0], j-dir[1], color).length > 0 && matchTile(i-2*dir[0], j-2*dir[1], color).length > 0) {
+        console.log("only neg dir")
+        let backTwo = matchTile(i-2*dir[0], j-2*dir[1], color)
+          for (let temp = 0; temp < backTwo.length; temp++) {
+            toClear.push([i-2*dir[0], j-2*dir[1], backTwo[temp]])
+          }
+          let backOne = matchTile(i-dir[0], j-dir[1], color)
+          for (let temp = 0; temp < backOne.length; temp++) {
+            toClear.push([i-dir[0], j-dir[1], backOne[temp]])
+          }
+      }
+    }
+    return toClear
+  }
+
   function matchTile(i, j, color) {
-    if (i >= board.length || j >= board[0].length || i < 0 || j < 0) {return false}
-    if (board[i][j] === null) {return false}
+    let matchInds = []
+    if (i >= board.length || j >= board[0].length || i < 0 || j < 0) {return matchInds}
+    if (board[i][j] === null) {return matchInds}
     // console.log(i, j)
     // console.log(board[i][j])
-    if (board[i][j][0] !== color) {return false}
-    return true
+    for (let ind = 0; ind < 3; ind++) {
+      if (board[i][j][ind] === color) {matchInds.push(ind)}
+    }
+    return matchInds
   }
 
   function createBoard() {
