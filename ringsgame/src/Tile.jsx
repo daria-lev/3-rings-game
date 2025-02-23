@@ -20,9 +20,7 @@ function Tile(props) {
     if (props.type === "tray") {
       props.clicked(props.ring, props.id)
     } else {
-      if (props.ring[0] === null && props.ring[1] === null && props.ring[2] === null) {
-        props.clicked(props.id[0], props.id[1])
-      }
+      props.clicked(props.id[0], props.id[1])
     }
   }
 

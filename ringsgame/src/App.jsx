@@ -41,10 +41,17 @@ function App() {
   function onBoardClick(i, j) {
     //console.log(curSelected)
     setClear(false)
-    if (curSelected[0] !== null || curSelected[1] !== null || curSelected[2] !== null) { // change when three ring setup
+    if (curSelected[0] !== null || curSelected[1] !== null || curSelected[2] !== null) { //checks that selected act has ring
+      for (let temp = 0; temp < 3; temp++) {
+        if (curSelected[temp] !== null && board[i][j][temp] !== null) {return}
+      }
       setSelected([null,null,null])
+      let newRing = [...board[i][j]]
+      for (let temp = 0; temp < 3; temp++) {
+        if (curSelected[temp] !== null) {newRing[temp] = curSelected[temp]}
+      }
       let newBoard = [...board]
-      newBoard[i][j] = curSelected
+      newBoard[i][j] = newRing
       // console.log("set board")
       let toClear = [] //check per non null color, set of colors checked? also check each ring individually
       let color = curSelected[0]
@@ -91,10 +98,10 @@ function App() {
       // console.log("dir " + dir[0], dir[1])
       let forwardOne = matchTile(i+dir[0], j+dir[1], color)
       if (forwardOne.length !== 0) {
-        console.log("pos dir")
+        //console.log("pos dir")
         let backOne = matchTile(i-dir[0], j-dir[1], color)
         if (backOne.length !== 0) {
-          console.log("neg dir")
+          //console.log("neg dir")
           for (let temp = 0; temp < forwardOne.length; temp++) {
             toClear.push([i+dir[0], j+dir[1], forwardOne[temp]])
           }
@@ -111,7 +118,7 @@ function App() {
           }
         } 
         else if (matchTile(i+2*dir[0], j+2*dir[1], color).length !== 0) {
-          console.log("pos 2 dir")
+          //console.log("pos 2 dir")
           let forwardOne = matchTile(i+dir[0], j+dir[1], color)
           for (let temp = 0; temp < forwardOne.length; temp++) {
             toClear.push([i+dir[0], j+dir[1], forwardOne[temp]])
@@ -122,7 +129,7 @@ function App() {
           }
         }
       } else if (matchTile(i-dir[0], j-dir[1], color).length > 0 && matchTile(i-2*dir[0], j-2*dir[1], color).length > 0) {
-        console.log("only neg dir")
+        //console.log("only neg dir")
         let backTwo = matchTile(i-2*dir[0], j-2*dir[1], color)
           for (let temp = 0; temp < backTwo.length; temp++) {
             toClear.push([i-2*dir[0], j-2*dir[1], backTwo[temp]])
