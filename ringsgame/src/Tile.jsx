@@ -17,10 +17,12 @@ function Tile(props) {
   let inRing = "inner ring " + iClass;
 
   function onTileClick() {
-    if (props.type === "tray") {
-      props.clicked(props.ring, props.id)
-    } else {
-      props.clicked(props.id[0], props.id[1])
+    if (props.time !== 0) {
+      if (props.type === "tray") {
+        props.clicked(props.ring, props.id)
+      } else {
+        props.clicked(props.id[0], props.id[1])
+      }
     }
   }
 

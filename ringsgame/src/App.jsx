@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -9,9 +9,34 @@ function App() {
   const [count, setCount] = useState(0)
   const [board, setBoard] = useState(defaultBoard())
   const [curSelected, setSelected] = useState([null,null,null]) // biggest to smallest
-  const [selectedID, setSelID] = useState(null)
+  const [timer, setTime] = useState(-1)
   const [clear, setClear] = useState(false)
+  const [bestScores, setBest] = useState([])
   const directions = [[-1,-1], [-1,0], [-1,1], [0,-1]] // these and reverse these
+
+  useEffect(() => {
+      // console.log(props.clear)
+      if (timer === 0) {
+        updateBest()
+        console.log(bestScores)
+      } else if (timer > 0) {
+        let countdown = setInterval(() => {
+          setTime(timer-1)
+        }, 1000);
+    
+        return () => {clearInterval(countdown)}
+      }
+    }, [timer]);
+
+  function updateBest() {
+    let newBest = [...bestScores]
+    newBest.push(count)
+    newBest.sort((a,b)=>b-a)
+    if (bestScores.length > 5) {
+      newBest = newBest.slice(0, 5)
+    } 
+    setBest(newBest)
+  }
 
   function defaultBoard() {
     let b = []
@@ -52,8 +77,8 @@ function App() {
       }
       let newBoard = [...board]
       newBoard[i][j] = newRing
-      // console.log("set board")
-      let toClear = [] //check per non null color, set of colors checked? also check each ring individually
+      // also need to check for 3x in one spot
+      let toClear = [] 
       let color = curSelected[0]
       let seenColors = []
       for (let ringNum = 0; ringNum < 3; ringNum++) {
@@ -163,7 +188,7 @@ function App() {
         if (board[i][j] === null) {
           row.push(<button className='unusable'></button>)
         } else {
-          row.push(<Tile type={'board'} ring={board[i][j]} clicked={onBoardClick} id={[i,j]}></Tile>)
+          row.push(<Tile type={'board'} ring={board[i][j]} clicked={onBoardClick} id={[i,j]} time={timer}></Tile>)
         }
       }
       output.push(<div key={i}>{row}</div>)
@@ -179,12 +204,42 @@ function App() {
     //clearing = false
   }
 
+  function onTimedClick() {
+    setTime(60)
+    onClearClick()
+  }
+
+  function onFreeClick() {
+    setTime(-1)
+    onClearClick()
+  }
+
+  function showTime() {
+    if (timer === -1) {
+      return <p>Freeplay Mode</p>
+    } else {
+      return <p>Time Remaining: {timer}</p>
+    }
+  }
+
+  function showBest() {
+    const listItems = bestScores.map(score => <li>{score}</li>)
+    return (<div>
+      <p>Best Scores</p>
+      <ol>{listItems.slice(0,5)}</ol>
+    </div>)
+  }
+
   return (
     <>
     <div style={{textAlign: 'left'}}>
+      {showTime()}
       <p>Points: {count}</p>
     </div>
     <div className='parent'>
+      <div className='bestBox'>
+        {showBest()}
+      </div>
       <div className='boardBox'>
         {createBoard()}
       </div>
@@ -195,9 +250,14 @@ function App() {
       
     </div>
     <div className='trayBox'>
-      <Tray click={onTrayClick} selected={curSelected} clear={clear}></Tray>
+      <Tray click={onTrayClick} selected={curSelected} clear={clear} time={timer}></Tray>
     </div>
-    <button onClick={onClearClick}>Clear Board</button>
+    <div>
+      <button style={{marginTop: '15px'}} onClick={onClearClick}>Clear Board</button>
+      <button style={{marginTop: '15px', marginLeft:'15px'}} onClick={onTimedClick}>Timed</button>
+      <button style={{marginTop: '15px', marginLeft:'15px'}} onClick={onFreeClick}>Freeplay</button>
+    </div>
+    
       
     </>
   )

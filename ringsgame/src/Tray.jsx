@@ -26,25 +26,34 @@ function Tray(props) {
     setID(id)
   }
   
-  function createRing() {
-    const vals = [randint(0,2), randint(0,2), randint(0,2)]
-    let ring = [null, null, null]
-    for (let i = 0; i < 3; i++) {
-      ring[vals[i]] = colors[randint(0, colors.length-1)]
-    }
-    //temp
-    // let ring = []
+  function createRing() { //change logic, it's weird -> 
+  //    pick 1-3 rand number of rings? if 3, fill all. if 1, pick spot. If 2, pick not spot
+    // const vals = [randint(0,2), randint(0,2), randint(0,2)]
+    // let ring = [null, null, null]
     // for (let i = 0; i < 3; i++) {
-    //   if (randint(0,2) == 1) {
-    //     ring.push(colors[randint(0, colors.length-1)])
-    //   } else {
-    //     ring.push(null)
-    //   }
+    //   ring[vals[i]] = colors[randint(0, colors.length-1)]
     // }
+    // return ring
+    let numRings = randint(1,3)
+    let ring = []
+    if (numRings === 1) {
+      let isRing = randint(0,2)
+      for (let i = 0; i < 3; i++) {
+        if (i === isRing) {ring.push(colors[randint(0, colors.length-1)])}
+        else {ring.push(null)}
+      }
+    } else if (numRings === 2) {
+      let notRing = randint(0,2) 
+      for (let i = 0; i < 3; i++) {
+        if (i !== notRing) {ring.push(colors[randint(0, colors.length-1)])}
+        else {ring.push(null)}
+      }
+    } else {
+      for (let i = 0; i < 3; i++) {
+        ring.push(colors[randint(0, colors.length-1)])
+      }
+    }
     return ring
-    // let newRings = [...rings]
-    // newRings[selectedID] = ring
-    // setRings(newRings)
   }
 
   function randint(min, max) {
@@ -55,9 +64,9 @@ function Tray(props) {
 
   return (
     <div>
-      <Tile id={0} ring={rings[0]} type={"tray"} clicked={tileClicked}></Tile>
-      <Tile id={1} ring={rings[1]} type={"tray"} clicked={tileClicked}></Tile>
-      <Tile id={2} ring={rings[2]} type={"tray"} clicked={tileClicked}></Tile>
+      <Tile id={0} ring={rings[0]} type={"tray"} clicked={tileClicked} time={props.time}></Tile>
+      <Tile id={1} ring={rings[1]} type={"tray"} clicked={tileClicked} time={props.time}></Tile>
+      <Tile id={2} ring={rings[2]} type={"tray"} clicked={tileClicked} time={props.time}></Tile>
     </div>
   );
 }
